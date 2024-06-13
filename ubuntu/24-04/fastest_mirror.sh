@@ -2,7 +2,17 @@
 
 # Fetch the HTML list of Ubuntu mirrors and extract URLs of up-to-date mirrors
 wget -q -O- https://launchpad.net/ubuntu/+archivemirrors > mirrors.txt
-grep -P -B8 "statusUP" mirrors.txt | grep -o -P "(f|ht)tp://[^\"]*" > filtered_mirrors.txt
+awk '
+/\/ubuntu\/\+mirror\// { 
+    if (block) { print block; block = "" }
+    in_block = 1
+}
+in_block { block = block $0 ORS }
+/<\/tr>/ { 
+    if (in_block && block ~ /statusUP/) { print block; block = ""; in_block = 0 }
+}
+END { if (block ~ /statusUP/) print block }
+' mirrors.txt | grep -o -P "(f|ht)tp://[^\"]*" > filtered_mirrors.txt
 
 # Read the list of mirrors
 mapfile -t mirrors < filtered_mirrors.txt
