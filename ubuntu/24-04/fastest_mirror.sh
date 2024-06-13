@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 # Fetch the HTML list of Ubuntu mirrors and extract URLs of up-to-date mirrors
 wget -q -O- https://launchpad.net/ubuntu/+archivemirrors > mirrors.txt
